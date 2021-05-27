@@ -1,0 +1,215 @@
+# Laravel Magick
+
+## Description
+
+`ralphschindler/laravel-magick` takes a unique approach to handling
+media files. Instead of treating media files as model relations, they are treated
+as attributes of a model. To this end, media metadata information is stored
+in a tables column (a model's attribute) at a given name. Additionally,
+this library handles image and media modifications (resizing, triming,
+backgrounds) when serving the image instead of at upload time. Files
+are stored in any of the configured kinds of file storage that Laravel
+supports.
+
+Features:
+
+- media files are tracked in same table's column
+- setup is handled by adding a trait and a method per image type
+- modifications can be made by manipuliating the image's url
+- placeholder generation is supported
+- fallback to a placeholdler (mainly for dev purposes) is supported
+  when the image is not on the disk
+
+### Other Good Libraries
+
+If this solution to the image problem does not appeal to you,
+[Spatie's MediaLibrary](https://github.com/spatie/laravel-medialibrary)
+is an excellent library that both treats images as
+Models as a Relation, and also has a concept of "conversions" that can
+be applied at upload time.
+
+## Installation
+
+First, install the package:
+
+    $ composer require ralphschindler/laravel-magick
+
+In Laravel 5.5+. this library will self-register. Next, you should
+publish the vendor (config) files:
+
+    $ artisan vendor:publish --provider="LaravelMagick\MagickProvider"
+
+It is now ready to use.
+
+## Usage
+
+### Attaching An Image To A Model
+
+In the simplest use case for a single image attached to a model, first
+create a `json` column in a migration to handle this image:
+
+```php
+// in a table migration
+$table->json('image')->nullable();
+```
+
+Next, in the model, add in the HasMagick trait and configure a class
+property called `$magick` like so:
+
+```php
+use LaravelMagick\Eloquent\HasMagick;
+
+class Post extends Model
+{
+    use HasMagick;
+
+    protected $magick = [
+        'path' => 'posts/{id}.{extension}',
+    ];
+}
+```
+
+### Attaching an Image Collection To A Model
+
+A Magick Collection is a ordered list of Media objects.  The collection
+itself when hydrated has images that are indexable starting at 0. Each
+collection has a concept of an *auto increment* number which is stored
+in the collection (and the collection's serialization) so that Media
+objects can take advantage of this in the path template.
+
+In the simplest use case, using a `json` column like in the direct image
+scenario above, add in the `HasMagick` trait as before, and
+use the `collection` key set to true, like below:
+
+```php
+use LaravelMagick\Eloquent\HasMagick;
+
+class Post extends Model
+{
+    use HasMagick;
+
+    protected $magick = [
+        'images' => [
+            'path' => 'post/{id}/image-{index}.{extension}',
+            'collection' => true
+        ],
+    ];
+}
+```
+
+### Displaying Media In A View
+
+The following blade syntax assumes $post is a Model of type Post with
+an `image` attribute.  This will generate a url
+similar to `/magick/post/11/image.png`:
+
+```php
+@if($bam->image->exists)
+    <img src="{{ $bam->image->url() }}" width="20" />
+@endif
+```
+
+Using modifiers when generating the url, a url generated such as
+`/magick/post/11/image.@size200x200@trim.png`
+
+```php
+@if($bam->image->exists)
+    <img src="{{ $bam->image->url('size200x200|trim) }}" width="20" />
+@endif
+```
+
+## Image Modifiers
+
+TODO
+
+## Detailed Configuration
+
+The following table describes the available configuration options:
+
+
+##### `magick.filesystem`
+
+Default: `env('MAGICK_FILESYSTEM', 'public')`
+
+This is the filesystem images will be stored on at the image's path.
+
+##### `magick.render.enable`
+
+Default: `true`
+
+Whether or not to enable the render *route* and modification functionality.
+
+##### `magick.render.path`
+
+Default: `/magick`
+
+The path prefix the route will live at and serve images from.
+
+##### `magick.render.placeholder.enable`
+
+Default: `env('MAGICK_RENDER_PLACEHOLDER_ENABLE', false)`
+
+Highly useful for dev purposes, consider enabling in local.
+
+##### `magick.render.placeholder.filename`
+
+default value `_placeholder_`
+
+This identifies when a placeholder image is being requested.
+
+##### `magick.render.placeholder.use_for_missing_files`
+
+default value `env('MAGICK_RENDER_PLACEHOLDER_USE_FOR_MISSING_FILES', false)`
+
+If an image is requested that is not on the filesystem, enabling this
+will serve a placeholder instead (useful for dev).
+
+##### `magick.render.caching.enable`
+
+default value `env('MAGICK_RENDER_CACHING_ENABLE', true)`
+
+Whether or not the controller should use full request caching
+
+##### `magick.render.caching.driver`
+
+default value `env('MAGICK_RENDER_CACHING_DRIVER', 'disk')`
+
+Cache to the disk.
+
+##### `magick.render.caching.ttl`
+
+default value `60`
+
+How long the ttl for the cache is.
+
+##### `magick.render.browser_cache_max_age`
+
+default value `31536000`
+
+How long the browser should cache the image generated by this route for.
+
+##### `magick.force_unmodified_image_rendering`
+
+default value `env('MAGICK_FORCE_UNMODIFIED_IMAGE_RENDERING', false)`
+
+This will allow for the dynamic (controller) route or static route (link to storage, for example)
+to be selectively used based on if modifiers are present in the image request
+
+## Demo
+
+Once cloned, `cd demo` directory. Inside there do the following:
+
+```console
+composer install
+artisan migrate
+artisan db:seed
+artisan serve
+```
+
+If you wish to demo the Nova specific capabilities, you must first install the downloadable
+version of nova to `demo/nova`.  Once it is there, continue with the above script from the top,
+then visit the examples at `/nova` in your browser.
+
+## TODO
+
+- support moving images as a result of updated path parts (attribute update, etc)
