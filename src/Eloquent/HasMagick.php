@@ -49,7 +49,9 @@ trait HasMagick
             $pathTemplate = $config['path'];
 
             if (!isset(static::$magickMediaPrototypes[$attribute])) {
-                $disk = $config['disk'] ?? config('magick.filesystem.default');
+
+                $disk = isset($config['disk_config']) ? config($config['disk_config']) : null;
+                $disk = $disk ?? ($config['disk'] ?? config('magick.filesystem.default'));
 
                 if (config('magick.filesystem.disk_render_prefixes') === null) {
                     throw new DomainException("$disk was the configured disk, but a prefix was not found in magick.filesystem.disk_render_prefixes");
