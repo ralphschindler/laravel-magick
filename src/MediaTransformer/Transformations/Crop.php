@@ -1,11 +1,11 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations;
+namespace LaravelMagick\MediaTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;
 
-class Crop implements ImagickTransformationInterface
+class Crop implements TransformationInterface
 {
     use Concerns\HasGravityFeatures;
 
@@ -13,7 +13,7 @@ class Crop implements ImagickTransformationInterface
      * @param Collection $arguments
      * @param Imagick $imagick
      */
-    public function applyImagick(Collection $arguments, Imagick $imagick)
+    public function apply(Collection $arguments, Imagick $imagick)
     {
         if (!$arguments->has('crop') || $arguments->has('fill')) {
             return;

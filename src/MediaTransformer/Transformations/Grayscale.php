@@ -1,13 +1,13 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations;
+namespace LaravelMagick\MediaTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;
 
-class Grayscale implements ImagickTransformationInterface
+class Grayscale implements TransformationInterface
 {
-    public function applyImagick(Collection $arguments, Imagick $imagick)
+    public function apply(Collection $arguments, Imagick $imagick)
     {
         if (!$arguments->has('grayscale')) {
             return;

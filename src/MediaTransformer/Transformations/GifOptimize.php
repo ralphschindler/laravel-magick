@@ -1,14 +1,14 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations;
+namespace LaravelMagick\MediaTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;
 use ImagickException;
 
-class GifOptimize implements ImagickTransformationInterface
+class GifOptimize implements TransformationInterface
 {
-    public function applyImagick(Collection $arguments, Imagick $imagick)
+    public function apply(Collection $arguments, Imagick $imagick)
     {
         if ($imagick->getImageFormat() !== 'GIF' || $imagick->getNumberImages() < 2) {
             return;

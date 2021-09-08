@@ -1,14 +1,14 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations;
+namespace LaravelMagick\MediaTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;
 use RuntimeException;
 
-class Fit implements ImagickTransformationInterface
+class Fit implements TransformationInterface
 {
-    public function applyImagick(Collection $arguments, Imagick $imagick)
+    public function apply(Collection $arguments, Imagick $imagick)
     {
         if (!$arguments->has('fit')) {
             return;

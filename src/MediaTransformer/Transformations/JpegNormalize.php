@@ -1,17 +1,17 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations;
+namespace LaravelMagick\MediaTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;
 
-class JpegNormalize implements ImagickTransformationInterface
+class JpegNormalize implements TransformationInterface
 {
     protected $fixColorspace = true;
 
     protected $samplingFactors = [];
 
-    public function applyImagick(Collection $arguments, Imagick $imagick)
+    public function apply(Collection $arguments, Imagick $imagick)
     {
         if ($this->fixColorspace) {
             if ($imagick->getColorspace() === Imagick::COLORSPACE_CMYK) {

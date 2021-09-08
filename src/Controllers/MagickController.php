@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use LaravelMagick\ImageTransformer\ImageTransformer;
+use LaravelMagick\MediaTransformer\MediaTransformer;
 use LaravelMagick\UrlHandler\UrlHandler;
 
 class MagickController extends Controller
@@ -34,65 +34,65 @@ class MagickController extends Controller
         /** @var Filesystem $filesystem */
         $filesystem = app(FilesystemManager::class)->disk($disk);
 
-        $imageRequestData = app(UrlHandler::class)->getDataFromRequest($request);
+        $mediaRequestData = app(UrlHandler::class)->getDataFromRequest($request);
 
-        $imageActualPath = $imageRequestData->get('path');
+        $mediaActualPath = $mediaRequestData->get('path');
 
         // assume the mime type is PNG unless otherwise specified
         $mimeType = 'image/png';
-        $imageBytes = null;
+        $mediaBytes = null;
 
         // step 1: if placeholder request, generate a placeholder
         // if ($filenameWithoutExtension === config('magick.render.placeholder.filename') && config('magick.render.placeholder.enable')) {
         if (
             config('magick.render.placeholder.enable')
-            && $imageActualPath === config('magick.render.placeholder.filename')
+            && $mediaActualPath === config('magick.render.placeholder.filename')
         ) {
             list ($placeholderWidth, $placeholderHeight) = isset($modifierOperators['size']) ? explode('x', $modifierOperators['size']) : [400, 400];
-            $imageBytes = $this->createPlaceHolderImage($imageRequestData);
+            $mediaBytes = $this->createPlaceHolderImage($mediaRequestData);
         }
 
         // step 2: no placeholder, look for actual file on designated filesystem
-        if (!$imageBytes) {
+        if (!$mediaBytes) {
             try {
-                $imageBytes = $filesystem->get($imageActualPath);
-                $mimeType = $filesystem->getMimeType($imageActualPath);
+                $mediaBytes = $filesystem->get($mediaActualPath);
+                $mimeType = $filesystem->getMimeType($mediaActualPath);
             } catch (FileNotFoundException $e) {
-                $imageBytes = null;
+                $mediaBytes = null;
             }
         }
 
         // step 3: no placeholder, no primary FS image, look for fallback image on alternative filesystem if enabled
-        if (!$imageBytes && config('magick.render.fallback.enable')) {
+        if (!$mediaBytes && config('magick.render.fallback.enable')) {
             /** @var Filesystem $fallbackFilesystem */
             $fallbackFilesystem = app(FilesystemManager::class)->disk(config('magick.render.fallback.filesystem'));
 
             try {
-                $imageBytes = $fallbackFilesystem->get($imageActualPath);
-                $mimeType = $fallbackFilesystem->getMimeType($imageActualPath);
+                $mediaBytes = $fallbackFilesystem->get($mediaActualPath);
+                $mimeType = $fallbackFilesystem->getMimeType($mediaActualPath);
 
                 if (config('magick.render.fallback.mark_images')) {
-                    $imageRequestData['fallbackbanner'] = true;
+                    $mediaRequestData['fallbackbanner'] = true;
                 }
             } catch (FileNotFoundException $e) {
-                $imageBytes = null;
+                $mediaBytes = null;
             }
         }
 
         // step 4: no placeholder, no primary FS image, no fallback, generate a placeholder if enabled for missing files
-        if (!$imageBytes && config('magick.render.placeholder.use_for_missing_files') === true) {
+        if (!$mediaBytes && config('magick.render.placeholder.use_for_missing_files') === true) {
             list ($placeholderWidth, $placeholderHeight) = isset($modifierOperators['size']) ? explode('x', $modifierOperators['size']) : [400, 400];
-            $imageBytes = $this->createPlaceHolderImage($imageRequestData);
+            $mediaBytes = $this->createPlaceHolderImage($mediaRequestData);
         }
 
-        abort_if(!$imageBytes, 404); // no image, no fallback, no placeholder
+        abort_if(!$mediaBytes, 404); // no image, no fallback, no placeholder
 
-        $imageBytes = app(ImageTransformer::class)->transform($imageRequestData, $imageBytes);
+        $mediaBytes = app(MediaTransformer::class)->transform($mediaRequestData, $mediaBytes);
 
         $browserCacheMaxAge = config('magick.render.browser_cache_max_age');
 
         $response = response()
-            ->make($imageBytes)
+            ->make($mediaBytes)
             ->header('Content-type', $mimeType)
             ->header('Cache-control', "public, max-age=$browserCacheMaxAge");
 

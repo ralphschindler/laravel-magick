@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations\Concerns;
+namespace LaravelMagick\MediaTransformer\Transformations\Concerns;
 
 use Illuminate\Support\Collection;
 

@@ -5,7 +5,7 @@ namespace LaravelMagick\Test\Unit\ImageTransformer\Transformations;
 use Imagick;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use LaravelMagick\ImageTransformer\Transformations\Fit;
+use LaravelMagick\MediaTransformer\Transformations\Fit;
 
 class FitTest extends TestCase
 {
@@ -25,7 +25,7 @@ class FitTest extends TestCase
             ->method('scaleImage')
             ->with($this->equalTo(100), $this->equalTo(100), $this->equalTo(true));
 
-        $fit->applyImagick($arguments, $imagickMock);
+        $fit->apply($arguments, $imagickMock);
     }
 
     public function testFitLimitWithImageThatIsSmallerThanBox()
@@ -42,7 +42,7 @@ class FitTest extends TestCase
         $imagickMock->expects($this->never())->method('rewind');
         $imagickMock->expects($this->never())->method('scaleImage');
 
-        $fit->applyImagick($arguments, $imagickMock);
+        $fit->apply($arguments, $imagickMock);
     }
 
     public function testFitLimitWithImageThatHasWidthOutsideBox()
@@ -61,7 +61,7 @@ class FitTest extends TestCase
             ->method('scaleImage')
             ->with($this->equalTo(100), $this->equalTo(100), $this->equalTo(true));
 
-        $fit->applyImagick($arguments, $imagickMock);
+        $fit->apply($arguments, $imagickMock);
     }
 
     public function testFitLimitWithImageThatHasHeightOutsideBox()
@@ -80,7 +80,7 @@ class FitTest extends TestCase
             ->method('scaleImage')
             ->with($this->equalTo(100), $this->equalTo(100), $this->equalTo(true));
 
-        $fit->applyImagick($arguments, $imagickMock);
+        $fit->apply($arguments, $imagickMock);
     }
 
     /**

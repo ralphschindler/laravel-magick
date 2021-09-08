@@ -1,15 +1,15 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations;
+namespace LaravelMagick\MediaTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;
 
-class Fill implements ImagickTransformationInterface
+class Fill implements TransformationInterface
 {
     use Concerns\HasGravityFeatures;
 
-    public function applyImagick(Collection $arguments, Imagick $imagick)
+    public function apply(Collection $arguments, Imagick $imagick)
     {
         if (!$arguments->has('fill')) {
             return;

@@ -1,11 +1,11 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations;
+namespace LaravelMagick\MediaTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;
 
-class Quality implements ImagickTransformationInterface
+class Quality implements TransformationInterface
 {
     protected $automatic = false;
 
@@ -17,7 +17,7 @@ class Quality implements ImagickTransformationInterface
         $this->automatic = $automatic;
     }
 
-    public function applyImagick(Collection $arguments, Imagick $imagick)
+    public function apply(Collection $arguments, Imagick $imagick)
     {
         // if has command || automatic
         if (!$arguments->has('quality') && !$this->automatic) {

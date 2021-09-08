@@ -1,14 +1,14 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer\Transformations;
+namespace LaravelMagick\MediaTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;
 use ImagickDraw;
 
-class FallbackBanner implements ImagickTransformationInterface
+class FallbackBanner implements TransformationInterface
 {
-    public function applyImagick(Collection $arguments, Imagick $imagick)
+    public function apply(Collection $arguments, Imagick $imagick)
     {
         if (!isset($arguments['fallbackbanner'])) {
             return;

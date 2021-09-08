@@ -9,7 +9,7 @@ use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaCoreServiceProvider;
 use RuntimeException;
-use LaravelMagick\ImageTransformer\ImageTransformer;
+use LaravelMagick\MediaTransformer\MediaTransformer;
 use LaravelMagick\UrlHandler\UrlHandler;
 
 class MagickProvider extends ServiceProvider
@@ -52,8 +52,8 @@ class MagickProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(ImageTransformer::class, function ($app) {
-            return new ImageTransformer(ImageTransformer::createTransformationCollection(
+        $this->app->singleton(MediaTransformer::class, function ($app) {
+            return new MediaTransformer(MediaTransformer::createTransformationCollection(
                 config('magick.render.transformation.transformers', [])
             ));
         });

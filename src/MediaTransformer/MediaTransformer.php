@@ -1,13 +1,13 @@
 <?php
 
-namespace LaravelMagick\ImageTransformer;
+namespace LaravelMagick\MediaTransformer;
 
 use Illuminate\Support\Collection;
 use Imagick;
 use InvalidArgumentException;
 use RuntimeException;
 
-class ImageTransformer
+class MediaTransformer
 {
     const BUILTIN_TRANSFORMATIONS = [
         'crop'           => Transformations\Crop::class,
@@ -51,10 +51,7 @@ class ImageTransformer
                 continue;
             }
 
-            if (class_exists($name) &&
-                ($name instanceof Transformations\ImagickTransformationInterface
-                || $name instanceof Transformations\GdTransformationInterface))
-            {
+            if (class_exists($name) && $name instanceof Transformations\TransformationInterface) {
                 $transformers->push(
                     app($name, $args)
                 );
@@ -114,9 +111,9 @@ class ImageTransformer
             }
 
             $this->transformations
-                ->whereInstanceOf(Transformations\ImagickTransformationInterface::class)
+                ->whereInstanceOf(Transformations\TransformationInterface::class)
                 ->each(function ($transformation) use ($arguments, $imagick) {
-                    $transformation->applyImagick($arguments, $imagick);
+                    $transformation->apply($arguments, $imagick);
                 });
 
             if ($isCoalesced) {

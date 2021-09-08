@@ -126,15 +126,15 @@ return [
             'extension_priority' => ['imagick', 'gd'],
 
             'transformers' => [
-                'jpegnormalize',
-                'jpegexif',
-                'gifstatic',
-                'quality',
-                'fit',
-                'grayscale',
-                'fallbackbanner',
-                'crop',
-                'fill'
+                // 'jpegnormalize',
+                // 'jpegexif',
+                // 'gifstatic',
+                // 'quality',
+                // 'fit',
+                // 'grayscale',
+                // 'fallbackbanner',
+                // 'crop',
+                // 'fill'
             ]
         ]
     ],
