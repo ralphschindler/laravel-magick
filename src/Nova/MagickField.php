@@ -40,8 +40,7 @@ class MagickField extends Field
         $fieldAttribute->updatePath([], $model);
     }
 
-
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         if ($this->value instanceof MediaCollection) {
             $isCollection = true;
